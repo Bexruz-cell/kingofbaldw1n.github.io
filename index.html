@@ -1,1195 +1,316 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kingofbaldw1n Stars</title>
-  <meta name="description" content="Покупка звёзд через Telegram" />
-  <style>
-    :root {
-      --bg-top: #183437;
-      --bg-mid: #10262b;
-      --bg-bottom: #071116;
-
-      --moon: #f4f0c8;
-      --moon-glow: rgba(244, 240, 200, 0.18);
-
-      --mountain-1: #233c3f;
-      --mountain-2: #1b3135;
-      --mountain-3: #132428;
-      --forest: #081216;
-
-      --card: rgba(255, 255, 255, 0.08);
-      --card-border: rgba(255, 255, 255, 0.12);
-      --text: #f2f5f7;
-      --muted: #adc0c5;
-
-      --accent: #dfe6c3;
-      --accent-2: #7cc9b6;
-      --btn-dark: rgba(255,255,255,0.08);
-      --shadow: 0 18px 45px rgba(0,0,0,0.35);
-
-      --radius: 28px;
-      --price-color: #f8f4cf;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
-    body {
-      min-height: 100vh;
-      font-family: Inter, Arial, sans-serif;
-      color: var(--text);
-      background:
-        linear-gradient(180deg, #284c4d 0%, var(--bg-top) 20%, var(--bg-mid) 55%, var(--bg-bottom) 100%);
-      overflow-x: hidden;
-      position: relative;
-    }
-
-    /* SKY */
-    .sky {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      overflow: hidden;
-    }
-
-    .moon-glow {
-      position: absolute;
-      left: 50%;
-      top: 14%;
-      width: min(52vw, 700px);
-      height: min(52vw, 700px);
-      transform: translateX(-50%);
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(244,240,200,0.26) 0%, rgba(244,240,200,0.12) 28%, rgba(244,240,200,0.04) 48%, transparent 70%);
-      filter: blur(16px);
-    }
-
-    .moon {
-      position: absolute;
-      left: 50%;
-      top: 18%;
-      transform: translateX(-50%);
-      width: min(22vw, 270px);
-      height: min(22vw, 270px);
-      border-radius: 50%;
-      background: radial-gradient(circle at 50% 45%, #faf7d7 0%, #efe9b7 55%, #d8d3a1 100%);
-      box-shadow:
-        0 0 60px 10px rgba(244, 240, 200, 0.15),
-        0 0 140px 40px rgba(244, 240, 200, 0.08);
-      opacity: 0.92;
-    }
-
-    .stars {
-      position: absolute;
-      inset: 0;
-      background-image:
-        radial-gradient(circle at 8% 13%, rgba(255,255,255,0.75) 0 1px, transparent 1.5px),
-        radial-gradient(circle at 14% 8%, rgba(255,255,255,0.6) 0 1px, transparent 1.5px),
-        radial-gradient(circle at 21% 14%, rgba(255,255,255,0.45) 0 1px, transparent 1.5px),
-        radial-gradient(circle at 30% 6%, rgba(255,255,255,0.7) 0 1px, transparent 1.5px),
-        radial-gradient(circle at 37% 12%, rgba(255,255,255,0.45) 0 1px, transparent 1.5px),
-        radial-gradient(circle at 44% 9%, rgba(255,255,255,0.55) 0 1px, transparent 1.5px),
-        radial-gradient(circle at 54% 6%, rgba(255,255,255,0.6) 0 1px, transparent 1.5px),
-        radial-gradient(circle at 61% 14%, rgba(255,255,255,0.7) 0 1px, transparent 1.5px),
-        radial-gradient(circle at 68% 8%, rgba(255,255,255,0.5) 0 1px, transparent 1.5px),
-        radial-gradient(circle at 76% 12%, rgba(255,255,255,0.6) 0 1px, transparent 1.5px),
-        radial-gradient(circle at 84% 7%, rgba(255,255,255,0.55) 0 1px, transparent 1.5px),
-        radial-gradient(circle at 91% 14%, rgba(255,255,255,0.45) 0 1px, transparent 1.5px);
-      opacity: 0.55;
-    }
-
-    /* MOUNTAINS */
-    .mountains {
-      position: absolute;
-      inset: 0;
-    }
-
-    .layer {
-      position: absolute;
-      left: 0;
-      width: 100%;
-      pointer-events: none;
-    }
-
-    .m1 {
-      bottom: 34%;
-      height: 34%;
-      background: var(--mountain-1);
-      clip-path: polygon(
-        0% 100%, 0% 55%, 8% 38%, 15% 52%, 21% 28%, 30% 58%, 39% 35%, 47% 63%,
-        56% 29%, 65% 52%, 74% 24%, 82% 48%, 91% 30%, 100% 56%, 100% 100%
-      );
-      opacity: 0.9;
-    }
-
-    .m2 {
-      bottom: 24%;
-      height: 36%;
-      background: var(--mountain-2);
-      clip-path: polygon(
-        0% 100%, 0% 72%, 9% 46%, 18% 66%, 28% 40%, 37% 58%, 46% 44%, 55% 62%,
-        66% 31%, 74% 58%, 83% 41%, 91% 67%, 100% 50%, 100% 100%
-      );
-      opacity: 0.95;
-    }
-
-    .m3 {
-      bottom: 15%;
-      height: 30%;
-      background: var(--mountain-3);
-      clip-path: polygon(
-        0% 100%, 0% 78%, 10% 55%, 20% 72%, 31% 46%, 42% 66%, 54% 48%, 65% 67%,
-        76% 44%, 87% 70%, 100% 54%, 100% 100%
-      );
-      opacity: 1;
-    }
-
-    /* RIVER */
-    .river {
-      position: absolute;
-      left: 50%;
-      bottom: 16%;
-      transform: translateX(-50%);
-      width: min(28vw, 340px);
-      height: 34%;
-      background: linear-gradient(180deg, rgba(255,255,255,0.38), rgba(200,240,230,0.18), rgba(255,255,255,0.05));
-      clip-path: polygon(
-        52% 0%, 58% 8%, 54% 17%, 62% 29%, 56% 38%, 66% 48%,
-        58% 58%, 68% 68%, 59% 79%, 70% 100%, 35% 100%, 48% 82%,
-        41% 67%, 48% 54%, 40% 41%, 46% 28%, 39% 15%, 45% 0%
-      );
-      filter: blur(2px);
-      opacity: 0.8;
-    }
-
-    /* FOREST */
-    .forest {
-      position: absolute;
-      left: 0;
-      bottom: 0;
-      width: 100%;
-      height: 32%;
-      background: var(--forest);
-      clip-path: polygon(
-        0% 100%, 0% 85%, 3% 72%, 5% 83%, 8% 54%, 10% 86%, 13% 62%, 15% 84%, 18% 48%, 20% 86%,
-        23% 65%, 25% 89%, 28% 52%, 30% 87%, 34% 60%, 36% 87%, 40% 49%, 42% 85%, 46% 66%, 48% 90%,
-        52% 52%, 54% 85%, 58% 64%, 60% 89%, 63% 54%, 65% 87%, 68% 65%, 70% 89%, 73% 48%, 75% 86%,
-        78% 60%, 80% 88%, 84% 50%, 86% 84%, 90% 60%, 92% 86%, 95% 48%, 97% 78%, 100% 66%, 100% 100%
-      );
-    }
-
-    .fog {
-      position: absolute;
-      inset: 0;
-      background:
-        linear-gradient(180deg, transparent 0%, transparent 45%, rgba(255,255,255,0.02) 58%, rgba(0,0,0,0.05) 100%);
-      pointer-events: none;
-    }
-
-    .wrap {
-      position: relative;
-      z-index: 2;
-      width: min(1180px, calc(100% - 24px));
-      margin: 0 auto;
-      padding: 14px 0 28px;
-    }
-
-    .nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 14px;
-      padding: 14px 16px;
-      border-radius: 22px;
-      background: rgba(8, 18, 22, 0.38);
-      border: 1px solid rgba(255,255,255,0.08);
-      backdrop-filter: blur(12px);
-      box-shadow: var(--shadow);
-      margin-bottom: 18px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 900;
-      letter-spacing: 0.2px;
-    }
-
-    .brand-logo {
-      width: 40px;
-      height: 40px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      background: linear-gradient(135deg, rgba(244,240,200,0.22), rgba(124,201,182,0.18));
-      border: 1px solid rgba(255,255,255,0.12);
-      box-shadow: 0 10px 24px rgba(0,0,0,0.2);
-      font-size: 18px;
-    }
-
-    .nav-link,
-    .floating-btn,
-    .quick-btn,
-    .control-btn,
-    .order-btn {
-      transition:
-        transform 0.22s cubic-bezier(.2,.9,.2,1.15),
-        box-shadow 0.22s ease,
-        background 0.22s ease,
-        opacity 0.22s ease;
-    }
-
-    .nav-link:active,
-    .floating-btn:active,
-    .quick-btn:active,
-    .control-btn:active,
-    .order-btn:active {
-      transform: scale(1.08);
-    }
-
-    .nav-link,
-    .floating-btn,
-    .order-btn {
-      text-decoration: none;
-      color: white;
-      font-weight: 800;
-      min-height: 48px;
-      padding: 12px 18px;
-      border-radius: 16px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(255,255,255,0.08);
-      border: 1px solid rgba(255,255,255,0.12);
-      backdrop-filter: blur(10px);
-      box-shadow: 0 12px 24px rgba(0,0,0,0.18);
-      cursor: pointer;
-    }
-
-    .nav-link:hover,
-    .floating-btn:hover,
-    .quick-btn:hover,
-    .control-btn:hover,
-    .order-btn:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 16px 32px rgba(0,0,0,0.24);
-    }
-
-    .hero {
-      display: grid;
-      grid-template-columns: 1.08fr 0.92fr;
-      gap: 18px;
-      align-items: stretch;
-    }
-
-    .panel {
-      background: rgba(8, 18, 22, 0.4);
-      border: 1px solid var(--card-border);
-      border-radius: var(--radius);
-      backdrop-filter: blur(16px);
-      box-shadow: var(--shadow);
-    }
-
-    .hero-main {
-      padding: 30px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .hero-main::after {
-      content: "";
-      position: absolute;
-      right: -80px;
-      top: -80px;
-      width: 240px;
-      height: 240px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(244,240,200,0.12) 0%, transparent 70%);
-      filter: blur(6px);
-      pointer-events: none;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 14px;
-      border-radius: 999px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: #e8edd2;
-      font-size: 14px;
-      margin-bottom: 18px;
-    }
-
-    h1 {
-      font-size: clamp(38px, 6vw, 76px);
-      line-height: 0.94;
-      letter-spacing: -1.8px;
-      margin-bottom: 16px;
-    }
-
-    .hero-text {
-      color: var(--muted);
-      font-size: 17px;
-      line-height: 1.7;
-      max-width: 650px;
-    }
-
-    .hero-actions {
-      margin-top: 22px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 12px;
-    }
-
-    .floating-btn {
-      animation: floatBtn 3.2s ease-in-out infinite;
-    }
-
-    .floating-btn:nth-child(2) {
-      animation-delay: 0.9s;
-    }
-
-    @keyframes floatBtn {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
-    }
-
-    .hero-stats {
-      margin-top: 22px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 12px;
-    }
-
-    .stat {
-      padding: 16px;
-      border-radius: 18px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.06);
-    }
-
-    .stat b {
-      display: block;
-      font-size: 20px;
-      margin-bottom: 4px;
-      color: var(--price-color);
-    }
-
-    .stat span {
-      color: var(--muted);
-      font-size: 13px;
-    }
-
-    .hero-side {
-      padding: 22px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .preview-box {
-      border-radius: 24px;
-      padding: 18px;
-      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.03));
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .preview-box h3 {
-      margin-bottom: 10px;
-      font-size: 18px;
-    }
-
-    .preview-box p {
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 14px;
-    }
-
-    .mini-grid {
-      margin-top: 14px;
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
-
-    .mini-card {
-      border-radius: 18px;
-      padding: 16px;
-      background: rgba(0,0,0,0.18);
-      border: 1px solid rgba(255,255,255,0.08);
-    }
-
-    .mini-card .icon {
-      font-size: 21px;
-      display: inline-block;
-      margin-bottom: 8px;
-    }
-
-    .mini-card b {
-      display: block;
-      margin-bottom: 4px;
-      color: var(--price-color);
-    }
-
-    .mini-card span {
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.45;
-    }
-
-    .section {
-      margin-top: 18px;
-    }
-
-    .section-head {
-      margin-bottom: 16px;
-    }
-
-    .section-head h2 {
-      font-size: clamp(26px, 4vw, 40px);
-      margin-bottom: 8px;
-    }
-
-    .section-head p {
-      color: var(--muted);
-      line-height: 1.65;
-    }
-
-    .calculator {
-      display: grid;
-      grid-template-columns: 1fr 0.95fr;
-      gap: 18px;
-    }
-
-    .calculator-left,
-    .calculator-right {
-      padding: 24px;
-    }
-
-    .field-label {
-      display: block;
-      margin-bottom: 10px;
-      font-weight: 800;
-      color: #eef3e0;
-      font-size: 15px;
-    }
-
-    .field-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .control-btn {
-      width: 52px;
-      height: 52px;
-      border: 0;
-      cursor: pointer;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.07);
-      color: white;
-      font-size: 24px;
-      font-weight: 900;
-      border: 1px solid rgba(255,255,255,0.08);
-      flex-shrink: 0;
-    }
-
-    .input {
-      width: 100%;
-      min-height: 58px;
-      border: 1px solid rgba(255,255,255,0.10);
-      border-radius: 18px;
-      background: rgba(255,255,255,0.06);
-      color: white;
-      font-size: 20px;
-      font-weight: 800;
-      text-align: center;
-      outline: none;
-      padding: 12px 14px;
-      backdrop-filter: blur(10px);
-    }
-
-    .input:focus {
-      border-color: rgba(244,240,200,0.38);
-      box-shadow: 0 0 0 4px rgba(244,240,200,0.08);
-    }
-
-    .limits {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      margin-top: 10px;
-      color: var(--muted);
-      font-size: 13px;
-      flex-wrap: wrap;
-    }
-
-    .quick-list {
-      margin-top: 16px;
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 10px;
-    }
-
-    .quick-btn {
-      border: 0;
-      cursor: pointer;
-      min-height: 46px;
-      border-radius: 14px;
-      color: white;
-      font-weight: 800;
-      font-size: 14px;
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.08);
-      padding: 8px 10px;
-      backdrop-filter: blur(8px);
-    }
-
-    .summary-card {
-      border-radius: 24px;
-      padding: 20px;
-      background: linear-gradient(180deg, rgba(244,240,200,0.08), rgba(124,201,182,0.07));
-      border: 1px solid rgba(255,255,255,0.10);
-      margin-bottom: 14px;
-    }
-
-    .summary-top {
-      display: flex;
-      justify-content: space-between;
-      gap: 12px;
-      align-items: center;
-      margin-bottom: 14px;
-    }
-
-    .summary-top b {
-      font-size: 18px;
-    }
-
-    .summary-price {
-      font-size: 34px;
-      font-weight: 900;
-      letter-spacing: -1px;
-      margin-bottom: 8px;
-      color: var(--price-color);
-    }
-
-    .summary-muted {
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 14px;
-    }
-
-    .info-list {
-      display: grid;
-      gap: 10px;
-      margin: 16px 0 18px;
-    }
-
-    .info-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 12px 14px;
-      border-radius: 16px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.06);
-      font-size: 14px;
-    }
-
-    .info-item span:first-child {
-      color: var(--muted);
-    }
-
-    .order-btn {
-      width: 100%;
-      min-height: 58px;
-      border: 0;
-      border-radius: 18px;
-      font-size: 16px;
-      font-weight: 900;
-      background: rgba(255,255,255,0.09);
-      border: 1px solid rgba(255,255,255,0.13);
-      backdrop-filter: blur(10px);
-    }
-
-    .order-btn:disabled {
-      cursor: not-allowed;
-      opacity: 0.55;
-      transform: none;
-    }
-
-    .message-preview {
-      margin-top: 14px;
-      padding: 16px;
-      border-radius: 18px;
-      background: rgba(0,0,0,0.16);
-      border: 1px solid rgba(255,255,255,0.07);
-    }
-
-    .message-preview h4 {
-      margin-bottom: 10px;
-      font-size: 15px;
-    }
-
-    .message-preview pre {
-      white-space: pre-wrap;
-      word-break: break-word;
-      color: #eef2f2;
-      font-family: inherit;
-      line-height: 1.6;
-      font-size: 14px;
-    }
-
-    .steps {
-      margin-top: 18px;
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 16px;
-    }
-
-    .step {
-      padding: 20px;
-    }
-
-    .step-num {
-      width: 42px;
-      height: 42px;
-      display: grid;
-      place-items: center;
-      border-radius: 14px;
-      font-weight: 900;
-      background: rgba(255,255,255,0.10);
-      border: 1px solid rgba(255,255,255,0.12);
-      margin-bottom: 14px;
-      color: var(--price-color);
-    }
-
-    .step h3 {
-      margin-bottom: 8px;
-    }
-
-    .step p {
-      color: var(--muted);
-      line-height: 1.6;
-      font-size: 14px;
-    }
-
-    footer {
-      margin-top: 20px;
-      text-align: center;
-      color: var(--muted);
-      font-size: 14px;
-      padding-bottom: 10px;
-    }
-
-    .toast {
-      position: fixed;
-      left: 50%;
-      bottom: 22px;
-      transform: translateX(-50%) translateY(20px);
-      opacity: 0;
-      pointer-events: none;
-      z-index: 30;
-      min-width: 230px;
-      text-align: center;
-      padding: 14px 18px;
-      border-radius: 16px;
-      background: rgba(8,18,22,0.94);
-      border: 1px solid rgba(255,255,255,0.08);
-      box-shadow: var(--shadow);
-      font-weight: 800;
-      transition: all .25s ease;
-    }
-
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
-
-    .error {
-      margin-top: 10px;
-      color: #ffd0d8;
-      font-size: 13px;
-      min-height: 18px;
-    }
-
-    /* PHONE VERSION */
-    @media (max-width: 950px) {
-      .hero,
-      .calculator,
-      .steps {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    @media (max-width: 680px) {
-      .wrap {
-        width: min(100% - 16px, 1180px);
-      }
-
-      .moon-glow {
-        top: 11%;
-        width: 92vw;
-        height: 92vw;
-      }
-
-      .moon {
-        top: 16%;
-        width: 34vw;
-        height: 34vw;
-      }
-
-      .m1 {
-        bottom: 38%;
-        height: 24%;
-      }
-
-      .m2 {
-        bottom: 27%;
-        height: 28%;
-      }
-
-      .m3 {
-        bottom: 18%;
-        height: 24%;
-      }
-
-      .river {
-        width: 44vw;
-        height: 28%;
-        bottom: 18%;
-      }
-
-      .forest {
-        height: 30%;
-      }
-
-      .nav {
-        border-radius: 18px;
-        padding: 12px;
-      }
-
-      .brand {
-        font-size: 14px;
-      }
-
-      .brand-logo {
-        width: 36px;
-        height: 36px;
-        border-radius: 12px;
-      }
-
-      .hero-main,
-      .hero-side,
-      .calculator-left,
-      .calculator-right,
-      .step {
-        padding: 18px;
-      }
-
-      .hero-stats {
-        grid-template-columns: 1fr;
-      }
-
-      .quick-list {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .mini-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .summary-price {
-        font-size: 28px;
-      }
-
-      h1 {
-        font-size: clamp(34px, 10vw, 52px);
-      }
-
-      .hero-actions {
-        flex-direction: column;
-      }
-
-      .nav-link,
-      .floating-btn,
-      .order-btn {
-        width: 100%;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kingofbaldw1n Stars</title>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial;
+}
+
+body{
+height:100vh;
+overflow:hidden;
+color:white;
+background:#0b1418;
+}
+
+/* SKY */
+
+.sky{
+position:fixed;
+width:100%;
+height:100%;
+top:0;
+left:0;
+background:linear-gradient(#28494a,#0c1a20);
+overflow:hidden;
+}
+
+/* MOON */
+
+.moon{
+position:absolute;
+top:10%;
+left:50%;
+transform:translateX(-50%);
+width:180px;
+height:180px;
+border-radius:50%;
+background:#f2eec4;
+box-shadow:0 0 120px #f2eec4;
+opacity:.9;
+}
+
+/* STARS */
+
+.stars{
+position:absolute;
+width:100%;
+height:100%;
+background-image:
+radial-gradient(white 1px, transparent 1px),
+radial-gradient(white 1px, transparent 1px);
+background-size:120px 120px;
+opacity:.4;
+}
+
+/* MOUNTAINS */
+
+.mountain1{
+position:absolute;
+bottom:35%;
+width:100%;
+height:40%;
+background:#1c3538;
+clip-path:polygon(
+0 100%,0 60%,10% 40%,20% 60%,30% 30%,40% 60%,50% 35%,60% 65%,70% 30%,80% 60%,90% 40%,100% 60%,100% 100%);
+}
+
+.mountain2{
+position:absolute;
+bottom:20%;
+width:100%;
+height:40%;
+background:#15282b;
+clip-path:polygon(
+0 100%,0 70%,15% 50%,30% 65%,45% 40%,60% 60%,75% 35%,90% 60%,100% 50%,100% 100%);
+}
+
+.mountain3{
+position:absolute;
+bottom:10%;
+width:100%;
+height:30%;
+background:#0d1b1f;
+clip-path:polygon(
+0 100%,0 80%,20% 55%,40% 75%,60% 45%,80% 70%,100% 55%,100% 100%);
+}
+
+/* FOREST */
+
+.forest{
+position:absolute;
+bottom:0;
+width:100%;
+height:28%;
+background:#060f12;
+clip-path:polygon(
+0 100%,0 80%,5% 60%,10% 85%,15% 55%,20% 80%,25% 60%,30% 90%,35% 55%,40% 80%,45% 65%,50% 90%,55% 60%,60% 85%,65% 55%,70% 80%,75% 60%,80% 85%,85% 55%,90% 80%,95% 60%,100% 85%,100% 100%);
+}
+
+/* BIRDS */
+
+.bird{
+position:absolute;
+width:20px;
+height:2px;
+background:white;
+opacity:.7;
+animation:fly 12s linear infinite;
+}
+
+.bird:before,
+.bird:after{
+content:"";
+position:absolute;
+width:10px;
+height:2px;
+background:white;
+}
+
+.bird:before{
+transform:rotate(25deg);
+left:-8px;
+}
+
+.bird:after{
+transform:rotate(-25deg);
+right:-8px;
+}
+
+@keyframes fly{
+0%{left:-50px;top:20%}
+100%{left:110%;top:25%}
+}
+
+/* MAIN */
+
+.container{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+background:rgba(0,0,0,.45);
+backdrop-filter:blur(20px);
+padding:35px;
+border-radius:20px;
+width:320px;
+text-align:center;
+}
+
+/* FLOAT BUTTON EFFECT */
+
+button{
+width:100%;
+padding:14px;
+border:none;
+border-radius:14px;
+margin-top:15px;
+background:rgba(255,255,255,.1);
+color:white;
+font-size:16px;
+cursor:pointer;
+transition:.2s;
+animation:float 3s ease-in-out infinite;
+}
+
+@keyframes float{
+0%,100%{transform:translateY(0)}
+50%{transform:translateY(-5px)}
+}
+
+button:active{
+transform:scale(1.08);
+}
+
+input{
+width:100%;
+padding:14px;
+margin-top:15px;
+border:none;
+border-radius:14px;
+text-align:center;
+font-size:18px;
+background:rgba(255,255,255,.1);
+color:white;
+}
+
+.price{
+margin-top:12px;
+font-size:20px;
+}
+
+footer{
+position:absolute;
+bottom:10px;
+width:100%;
+text-align:center;
+font-size:13px;
+color:#9aa;
+}
+
+</style>
 </head>
+
 <body>
-  <div class="sky">
-    <div class="stars"></div>
-    <div class="moon-glow"></div>
-    <div class="moon"></div>
 
-    <div class="mountains">
-      <div class="layer m1"></div>
-      <div class="layer m2"></div>
-      <div class="layer m3"></div>
-      <div class="river"></div>
-      <div class="forest"></div>
-      <div class="fog"></div>
-    </div>
-  </div>
+<div class="sky" id="sky">
 
-  <div class="wrap">
-    <header class="nav">
-      <div class="brand">
-        <div class="brand-logo">⭐</div>
-        <div>Kingofbaldw1n Stars</div>
-      </div>
-      <a class="nav-link" href="#order">Сделать заказ</a>
-    </header>
+<div class="stars"></div>
+<div class="moon"></div>
 
-    <main>
-      <section class="hero">
-        <div class="panel hero-main">
-          <div class="badge">🌙 Тёмный стиль • Без регистрации • Прямой заказ</div>
-          <h1>Звёзды<br>с ночным вайбом</h1>
-          <p class="hero-text">
-            Вводишь количество звёзд, сайт сам считает сумму по курсу
-            <b>267 сум за 1 звезду</b>, а потом сразу перекидывает в Telegram
-            с готовым текстом заказа.
-          </p>
+<div class="mountain1"></div>
+<div class="mountain2"></div>
+<div class="mountain3"></div>
 
-          <div class="hero-actions">
-            <a class="floating-btn" href="#order">Купить сейчас</a>
-            <a class="floating-btn" href="#how">Как это работает</a>
-          </div>
+<div class="forest"></div>
 
-          <div class="hero-stats">
-            <div class="stat">
-              <b>267 сум</b>
-              <span>за 1 звезду</span>
-            </div>
-            <div class="stat">
-              <b>50 ⭐</b>
-              <span>минимум</span>
-            </div>
-            <div class="stat">
-              <b>100000 ⭐</b>
-              <span>максимум</span>
-            </div>
-          </div>
-        </div>
+<div class="bird" style="animation-delay:0s"></div>
+<div class="bird" style="animation-delay:4s"></div>
+<div class="bird" style="animation-delay:8s"></div>
 
-        <div class="panel hero-side">
-          <div class="preview-box">
-            <h3>Атмосфера</h3>
-            <p>
-              Фон специально сделан под тёмный ночной стиль:
-              луна, свечение, дальние горы, река и лес как на твоём примере.
-            </p>
+</div>
 
-            <div class="mini-grid">
-              <div class="mini-card">
-                <div class="icon">🌙</div>
-                <b>Луна</b>
-                <span>мягкое свечение сзади</span>
-              </div>
-              <div class="mini-card">
-                <div class="icon">⛰️</div>
-                <b>Горы</b>
-                <span>отдельный вид под ПК и телефон</span>
-              </div>
-              <div class="mini-card">
-                <div class="icon">🫧</div>
-                <b>Плавающие кнопки</b>
-                <span>живой эффект движения</span>
-              </div>
-              <div class="mini-card">
-                <div class="icon">💥</div>
-                <b>Нажатие</b>
-                <span>кнопка слегка набухает</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+<div class="container">
 
-      <section class="section" id="order">
-        <div class="section-head">
-          <h2>Калькулятор заказа</h2>
-          <p>
-            Выбери количество звёзд от 50 до 100000.
-            Сумма посчитается автоматически, а сообщение в Telegram уже будет готово.
-          </p>
-        </div>
+<h2>⭐ Stars</h2>
 
-        <div class="calculator">
-          <div class="panel calculator-left">
-            <label class="field-label" for="starsInput">Количество звёзд</label>
+<input id="stars" type="number" placeholder="Количество">
 
-            <div class="field-row">
-              <button class="control-btn" id="minusBtn" type="button">−</button>
-              <input
-                class="input"
-                id="starsInput"
-                type="number"
-                min="50"
-                max="100000"
-                step="1"
-                value="50"
-                inputmode="numeric"
-                placeholder="Введите количество"
-              />
-              <button class="control-btn" id="plusBtn" type="button">+</button>
-            </div>
+<div class="price">
+Итого: <span id="sum">0</span> сум
+</div>
 
-            <div class="limits">
-              <span>Минимум: <b>50 ⭐</b></span>
-              <span>Максимум: <b>100000 ⭐</b></span>
-              <span>Курс: <b>267 сум</b></span>
-            </div>
+<button onclick="order()">Заказать</button>
 
-            <div class="error" id="errorText"></div>
+</div>
 
-            <div class="quick-list">
-              <button class="quick-btn" type="button" data-quick="50">50 ⭐</button>
-              <button class="quick-btn" type="button" data-quick="100">100 ⭐</button>
-              <button class="quick-btn" type="button" data-quick="500">500 ⭐</button>
-              <button class="quick-btn" type="button" data-quick="1000">1000 ⭐</button>
-              <button class="quick-btn" type="button" data-quick="5000">5000 ⭐</button>
-              <button class="quick-btn" type="button" data-quick="10000">10000 ⭐</button>
-              <button class="quick-btn" type="button" data-quick="50000">50000 ⭐</button>
-              <button class="quick-btn" type="button" data-quick="100000">100000 ⭐</button>
-            </div>
-          </div>
+<footer>
+© 2026 Kingofbaldw1n Stars
+</footer>
 
-          <div class="panel calculator-right">
-            <div class="summary-card">
-              <div class="summary-top">
-                <b>Итог заказа</b>
-                <span>⭐</span>
-              </div>
+<script>
 
-              <div class="summary-price" id="totalPrice">13 350 сум</div>
-              <div class="summary-muted">
-                Нажимаешь кнопку — и открывается Telegram с готовым текстом заказа.
-              </div>
-            </div>
+const price = 267
+const min = 50
+const max = 100000
+const tg = "Kingofbaldw1n"
 
-            <div class="info-list">
-              <div class="info-item">
-                <span>Количество</span>
-                <b id="starsCount">50 ⭐</b>
-              </div>
-              <div class="info-item">
-                <span>Цена за 1 звезду</span>
-                <b>267 сум</b>
-              </div>
-              <div class="info-item">
-                <span>Telegram</span>
-                <b>@Kingofbaldw1n</b>
-              </div>
-            </div>
+const input = document.getElementById("stars")
+const sum = document.getElementById("sum")
 
-            <button class="order-btn" id="orderBtn" type="button">
-              Заказать в Telegram
-            </button>
+input.addEventListener("input",()=>{
 
-            <div class="message-preview">
-              <h4>Предпросмотр сообщения</h4>
-              <pre id="messagePreview"></pre>
-            </div>
-          </div>
-        </div>
-      </section>
+let val = Number(input.value)
 
-      <section class="steps" id="how">
-        <div class="panel step">
-          <div class="step-num">1</div>
-          <h3>Введи число</h3>
-          <p>Пишешь, сколько звёзд хочешь купить. Можно вручную или кнопками.</p>
-        </div>
+if(val < min){
+sum.innerText = 0
+return
+}
 
-        <div class="panel step">
-          <div class="step-num">2</div>
-          <h3>Сайт считает</h3>
-          <p>Сумма обновляется сразу по курсу 267 сум за одну звезду.</p>
-        </div>
+if(val > max){
+val = max
+input.value = max
+}
 
-        <div class="panel step">
-          <div class="step-num">3</div>
-          <h3>Переход в Telegram</h3>
-          <p>Нажимаешь кнопку и сразу попадаешь в диалог с готовым текстом заказа.</p>
-        </div>
-      </section>
-    </main>
+sum.innerText = val * price
 
-    <footer>
-      © 2026 Kingofbaldw1n Stars • Ночной стиль
-    </footer>
-  </div>
+})
 
-  <div class="toast" id="toast">Переход в Telegram...</div>
+function order(){
 
-  <script>
-    const PRICE_PER_STAR = 267;
-    const MIN_STARS = 50;
-    const MAX_STARS = 100000;
-    const TELEGRAM_USERNAME = "Kingofbaldw1n";
+let stars = Number(input.value)
 
-    const starsInput = document.getElementById("starsInput");
-    const minusBtn = document.getElementById("minusBtn");
-    const plusBtn = document.getElementById("plusBtn");
-    const totalPrice = document.getElementById("totalPrice");
-    const starsCount = document.getElementById("starsCount");
-    const messagePreview = document.getElementById("messagePreview");
-    const orderBtn = document.getElementById("orderBtn");
-    const toast = document.getElementById("toast");
-    const errorText = document.getElementById("errorText");
-    const quickButtons = document.querySelectorAll("[data-quick]");
+if(stars < min){
+alert("Минимум 50")
+return
+}
 
-    function formatNumber(value) {
-      return new Intl.NumberFormat("ru-RU").format(value);
-    }
+if(stars > max){
+alert("Максимум 100000")
+return
+}
 
-    function sanitizeValue(value) {
-      if (!Number.isFinite(value)) return MIN_STARS;
-      value = Math.floor(value);
-      if (value < MIN_STARS) return MIN_STARS;
-      if (value > MAX_STARS) return MAX_STARS;
-      return value;
-    }
+let total = stars * price
 
-    function currentValueRaw() {
-      return Number(starsInput.value);
-    }
+let text = `Здравствуйте! Хочу купить ${stars} ⭐. Сумма ${total} сум.`
 
-    function buildMessage(stars, sum) {
-      return [
-        "Здравствуйте!",
-        `Хочу купить ${stars} ⭐`,
-        `Сумма: ${formatNumber(sum)} сум`,
-        "",
-        "Напишите, пожалуйста, как оформить заказ."
-      ].join("\\n");
-    }
+let url = `https://t.me/${tg}?text=${encodeURIComponent(text)}`
 
-    function updateUI(showValidation = false) {
-      let raw = currentValueRaw();
+window.open(url)
 
-      if (!Number.isFinite(raw) || starsInput.value.trim() === "") {
-        totalPrice.textContent = "0 сум";
-        starsCount.textContent = "—";
-        messagePreview.textContent = "Введите количество звёзд, чтобы увидеть готовый текст заказа.";
-        orderBtn.disabled = true;
+}
 
-        if (showValidation) {
-          errorText.textContent = `Введите число от ${MIN_STARS} до ${MAX_STARS}.`;
-        } else {
-          errorText.textContent = "";
-        }
-        return;
-      }
+/* PARALLAX */
 
-      if (raw < MIN_STARS) {
-        errorText.textContent = `Минимальный заказ — ${MIN_STARS} ⭐`;
-      } else if (raw > MAX_STARS) {
-        errorText.textContent = `Максимальный заказ — ${MAX_STARS} ⭐`;
-      } else {
-        errorText.textContent = "";
-      }
+document.addEventListener("mousemove",(e)=>{
 
-      const safe = sanitizeValue(raw);
-      const sum = safe * PRICE_PER_STAR;
+let x = (e.clientX / window.innerWidth - .5) * 20
+let y = (e.clientY / window.innerHeight - .5) * 20
 
-      totalPrice.textContent = `${formatNumber(sum)} сум`;
-      starsCount.textContent = `${formatNumber(safe)} ⭐`;
-      messagePreview.textContent = buildMessage(safe, sum);
-      orderBtn.disabled = false;
-    }
+document.getElementById("sky").style.transform =
+`translate(${x}px,${y}px)`
 
-    function setStars(value) {
-      starsInput.value = sanitizeValue(value);
-      updateUI();
-    }
+})
 
-    function showToast(text) {
-      toast.textContent = text;
-      toast.classList.add("show");
-      clearTimeout(showToast.timer);
-      showToast.timer = setTimeout(() => {
-        toast.classList.remove("show");
-      }, 1800);
-    }
+</script>
 
-    minusBtn.addEventListener("click", () => {
-      const value = sanitizeValue(currentValueRaw() || MIN_STARS);
-      const next = value > 1000 ? value - 1000 : value - 1;
-      setStars(next);
-    });
-
-    plusBtn.addEventListener("click", () => {
-      const value = sanitizeValue(currentValueRaw() || MIN_STARS);
-      const next = value >= 1000 ? value + 1000 : value + 1;
-      setStars(next);
-    });
-
-    starsInput.addEventListener("input", () => {
-      const cleaned = starsInput.value.replace(/[^0-9]/g, "");
-      if (starsInput.value !== cleaned) starsInput.value = cleaned;
-      updateUI(true);
-    });
-
-    starsInput.addEventListener("blur", () => {
-      if (starsInput.value.trim() === "") {
-        starsInput.value = MIN_STARS;
-      } else {
-        starsInput.value = sanitizeValue(Number(starsInput.value));
-      }
-      updateUI();
-    });
-
-    quickButtons.forEach((btn) => {
-      btn.addEventListener("click", () => {
-        setStars(Number(btn.dataset.quick));
-      });
-    });
-
-    orderBtn.addEventListener("click", () => {
-      let stars = currentValueRaw();
-
-      if (!Number.isFinite(stars)) {
-        errorText.textContent = `Введите число от ${MIN_STARS} до ${MAX_STARS}.`;
-        return;
-      }
-
-      stars = sanitizeValue(stars);
-      starsInput.value = stars;
-
-      const sum = stars * PRICE_PER_STAR;
-      const message = buildMessage(stars, sum);
-      const url = `https://t.me/${TELEGRAM_USERNAME}?text=${encodeURIComponent(message)}`;
-
-      updateUI();
-      showToast("Переход в Telegram...");
-
-      setTimeout(() => {
-        window.open(url, "_blank");
-      }, 220);
-    });
-
-    updateUI();
-  </script>
 </body>
 </html>
