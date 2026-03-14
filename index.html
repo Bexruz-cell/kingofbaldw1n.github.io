@@ -24,7 +24,7 @@
       --shadow:0 20px 60px rgba(0,0,0,.38);
       --radius:24px;
     }*{box-sizing:border-box}
-html,body{margin:0;padding:0}
+html,body{margin:0;padding:0;scroll-behavior:smooth}
 body{
   font-family:'Inter',system-ui,sans-serif;
   color:var(--text);
@@ -250,27 +250,39 @@ body{
 .muted{color:var(--muted)}
 .small{font-size:12px;color:var(--muted)}
 
-.cart-panel{
-  position:fixed; right:18px; bottom:94px; width:min(360px, calc(100% - 24px)); max-height:70vh;
-  overflow:auto; z-index:25; display:none;
-  padding:18px; border-radius:26px; border:1px solid var(--line);
-  background:linear-gradient(180deg, rgba(2,6,23,.95), rgba(8,17,32,.98));
-  box-shadow:0 28px 60px rgba(0,0,0,.5); backdrop-filter:blur(18px);
+.full-cart-screen{
+  min-height:calc(100vh - 130px);
+  display:none;
 }
-.cart-panel.open{display:block; animation:fade .2s ease}
-.cart-title{font-size:22px; font-weight:800; margin:0 0 10px}
-.cart-empty{color:var(--muted); line-height:1.6}
-.cart-item{
-  display:grid; grid-template-columns:1fr auto auto; gap:8px; align-items:center;
-  padding:12px 0; border-bottom:1px solid rgba(255,255,255,.06)
+.full-cart-screen.active{display:block; animation:fade .22s ease}
+.cart-header-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.cart-list-wrap{display:flex;flex-direction:column;gap:12px}
+.cart-line{
+  display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;
+  padding:16px;border-radius:20px;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.03)
 }
-.cart-name{font-size:14px; font-weight:700}
-.cart-sub{font-size:12px; color:var(--muted); margin-top:2px}
+.cart-line-name{font-size:15px;font-weight:800}
+.cart-line-sub{font-size:12px;color:var(--muted);margin-top:4px}
+.cart-line-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.qty-group{display:flex;align-items:center;gap:6px}
 .qty{
-  width:34px;height:34px;border-radius:10px;border:1px solid var(--line); background:rgba(255,255,255,.04); color:#fff; cursor:pointer
+  width:36px;height:36px;border-radius:12px;border:1px solid var(--line); background:rgba(255,255,255,.04); color:#fff; cursor:pointer;
+  font-size:18px;line-height:1
 }
-.remove{border:none; background:transparent; color:#fca5a5; cursor:pointer; font-weight:700}
-.cart-total{display:flex; align-items:center; justify-content:space-between; margin:14px 0 10px; font-size:18px; font-weight:800}
+.qty-value{min-width:20px;text-align:center;font-weight:800}
+.remove{border:none;background:transparent;color:#fca5a5;cursor:pointer;font-weight:700;font-size:14px}
+.cart-bottom-card{margin-top:16px;padding:18px;border-radius:22px;border:1px solid var(--line);background:rgba(255,255,255,.04)}
+.cart-total{display:flex; align-items:center; justify-content:space-between; margin:0 0 14px; font-size:18px; font-weight:800}
+.cart-empty{color:var(--muted); line-height:1.6; padding:10px 0}
+
+.toast{
+  position:fixed; left:50%; bottom:96px; transform:translateX(-50%) translateY(20px);
+  padding:14px 18px; border-radius:16px; background:rgba(6,10,18,.92); color:#fff;
+  border:1px solid rgba(255,255,255,.08); box-shadow:0 20px 40px rgba(0,0,0,.4);
+  opacity:0; pointer-events:none; z-index:60; transition:opacity .22s ease, transform .22s ease;
+  font-weight:700; white-space:nowrap; max-width:calc(100% - 24px); overflow:hidden; text-overflow:ellipsis;
+}
+.toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
 
 @media (max-width: 920px){
   .categories{grid-template-columns:1fr}
@@ -282,13 +294,14 @@ body{
   .categories{gap:14px}
   .category-card{min-height:unset; padding:22px}
   .category-title{font-size:28px}
-  .cart-panel{right:12px; bottom:88px}
   .toolbar{flex-direction:column}
   .search,.select{width:100%}
   .product-actions{flex-direction:column}
   .brand{padding:10px 12px}
   .brand-icon{width:46px;height:46px;border-radius:16px}
   .moon{width:220px;top:11%}
+  .cart-line{grid-template-columns:1fr}
+  .cart-line-right{justify-content:flex-start}
 }
 
   </style>
@@ -383,19 +396,31 @@ body{
   </div>
 </section>
 
-  </div>  <button class="cart-fab" onclick="toggleCart()" aria-label="Корзина">
+<section class="full-cart-screen" id="screen-cart">
+  <div class="section-card">
+    <div class="cart-header-row">
+      <div>
+        <div class="section-title">Корзина</div>
+        <div class="section-sub">Все товары заказа в одном отдельном экране</div>
+      </div>
+      <button class="back-btn" onclick="returnFromCart()">← Назад</button>
+    </div>
+    <div id="cartItemsScreen" class="cart-list-wrap"></div>
+    <div class="cart-bottom-card">
+      <div class="cart-total">
+        <span>Сумма заказа в общем</span>
+        <span id="cartTotal">0 сум</span>
+      </div>
+      <button class="btn primary full" onclick="checkoutCart()">Сделать готовый текст</button>
+      <div class="small" style="margin-top:10px">После нажатия откроется Telegram с готовым сообщением.</div>
+    </div>
+  </div>
+</section>
+
+  </div>  <button class="cart-fab" onclick="openCartScreen()" aria-label="Корзина">
     ✈
     <span class="cart-badge" id="cartBadge">0</span>
-  </button>  <aside class="cart-panel" id="cartPanel">
-    <h3 class="cart-title">Корзина</h3>
-    <div id="cartItems"></div>
-    <div class="cart-total">
-      <span>Сумма заказа в общем</span>
-      <span id="cartTotal">0 сум</span>
-    </div>
-    <button class="btn primary full" onclick="checkoutCart()">Сделать готовый текст</button>
-    <div class="small" style="margin-top:10px">После нажатия откроется Telegram с готовым сообщением.</div>
-  </aside>  <script>
+  </button>  <div class="toast" id="toast">Добавлено в корзину</div>  <script>
     const TELEGRAM_USERNAME = 'KingOfbaldw1n';
     const STAR_PRICE = 267;
     const MIN_STARS = 50;
@@ -417,16 +442,18 @@ body{
     const starsBase = [50,100,250,500,1000,2500];
 
     let cart = [];
+    let lastScreen = 'home';
+    let toastTimer = null;
 
     const numbersCatalog = document.getElementById('numbersCatalog');
     const starsCatalog = document.getElementById('starsCatalog');
-    const cartItemsEl = document.getElementById('cartItems');
+    const cartItemsScreen = document.getElementById('cartItemsScreen');
     const cartTotalEl = document.getElementById('cartTotal');
     const cartBadgeEl = document.getElementById('cartBadge');
-    const cartPanel = document.getElementById('cartPanel');
     const customStarsInput = document.getElementById('customStarsInput');
     const customStarsPrice = document.getElementById('customStarsPrice');
     const customStarsHint = document.getElementById('customStarsHint');
+    const toast = document.getElementById('toast');
 
     function formatSum(value){
       return new Intl.NumberFormat('ru-RU').format(Math.round(value)) + ' сум';
@@ -437,15 +464,40 @@ body{
       return `<span class="pill"><span class="dot ${dotClass}"></span>${label}</span>`;
     }
 
-    function openScreen(name){
+    function setActiveScreen(screenName){
       document.querySelectorAll('.screen').forEach(el => el.classList.remove('active'));
-      document.getElementById(`screen-${name}`).classList.add('active');
+      document.getElementById('screen-cart').classList.remove('active');
+      if(screenName === 'cart') {
+        document.getElementById('screen-cart').classList.add('active');
+      } else {
+        document.getElementById(`screen-${screenName}`).classList.add('active');
+      }
       window.scrollTo({top:0,behavior:'smooth'});
-      closeCart();
+    }
+
+    function openScreen(name){
+      lastScreen = name;
+      setActiveScreen(name);
     }
 
     function goHome(){
-      openScreen('home');
+      lastScreen = 'home';
+      setActiveScreen('home');
+    }
+
+    function openCartScreen(){
+      setActiveScreen('cart');
+    }
+
+    function returnFromCart(){
+      setActiveScreen(lastScreen || 'home');
+    }
+
+    function showToast(message){
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove('show'), 1500);
     }
 
     function renderNumbers(){
@@ -504,44 +556,34 @@ body{
     function addNumberToCart(id){
       const item = numbers.find(x => x.id === id);
       if(!item) return;
-      const existing = cart.find(x => x.kind === 'number' && x.id === id);
-      if(existing){
-        existing.qty += 1;
-      } else {
-        cart.push({
-          lineId: makeLineId(),
-          kind:'number',
-          id:item.id,
-          name:item.name,
-          unitPrice:item.price,
-          qty:1,
-          subtitle:'Номер'
-        });
-      }
+      cart.push({
+        lineId: makeLineId(),
+        kind:'number',
+        id:item.id,
+        name:item.name,
+        unitPrice:item.price,
+        qty:1,
+        subtitle:'Номер'
+      });
       renderCart();
-      openCart();
+      showToast('Добавлено в корзину');
     }
 
     function addStarsPackToCart(amount){
       const numAmount = Number(amount);
       if(!Number.isFinite(numAmount) || numAmount < MIN_STARS) return;
-      const existing = cart.find(x => x.kind === 'stars' && x.starsAmount === numAmount);
-      if(existing){
-        existing.qty += 1;
-      } else {
-        cart.push({
-          lineId: makeLineId(),
-          kind:'stars',
-          id:'stars-' + numAmount,
-          name:`⭐ ${new Intl.NumberFormat('ru-RU').format(numAmount)} stars`,
-          unitPrice:numAmount * STAR_PRICE,
-          qty:1,
-          subtitle:'Telegram Stars',
-          starsAmount:numAmount
-        });
-      }
+      cart.push({
+        lineId: makeLineId(),
+        kind:'stars',
+        id:'stars-' + numAmount + '-' + Date.now(),
+        name:`⭐ ${new Intl.NumberFormat('ru-RU').format(numAmount)} stars`,
+        unitPrice:numAmount * STAR_PRICE,
+        qty:1,
+        subtitle:'Telegram Stars',
+        starsAmount:numAmount
+      });
       renderCart();
-      openCart();
+      showToast('Добавлено в корзину');
     }
 
     function sanitizeStarsAmount(raw){
@@ -586,7 +628,7 @@ body{
       customStarsInput.value = '';
       updateCustomStarsPreview();
       renderCart();
-      openCart();
+      showToast('Добавлено в корзину');
     }
 
     function changeQty(lineId, diff){
@@ -617,22 +659,25 @@ body{
       cartTotalEl.textContent = formatSum(getCartTotal());
 
       if(!cart.length){
-        cartItemsEl.innerHTML = `<div class="cart-empty">Корзина пустая.</div>`;
+        cartItemsScreen.innerHTML = `<div class="cart-empty">Корзина пустая.</div>`;
         return;
       }
 
-      cartItemsEl.innerHTML = cart.map(item => `
-        <div class="cart-item">
+      cartItemsScreen.innerHTML = cart.map(item => `
+        <div class="cart-line">
           <div>
-            <div class="cart-name">${item.name}</div>
-            <div class="cart-sub">${item.subtitle} · ${formatSum(item.unitPrice)} за 1 шт</div>
+            <div class="cart-line-name">${item.name}</div>
+            <div class="cart-line-sub">${item.subtitle} · ${formatSum(item.unitPrice)} за 1 шт</div>
           </div>
-          <div style="display:flex;align-items:center;gap:6px">
-            <button type="button" class="qty qty-minus" data-line="${item.lineId}">−</button>
-            <div style="min-width:20px;text-align:center;font-weight:800">${item.qty}</div>
-            <button type="button" class="qty qty-plus" data-line="${item.lineId}">+</button>
+          <div class="cart-line-right">
+            <div class="qty-group">
+              <button type="button" class="qty qty-minus" data-line="${item.lineId}">−</button>
+              <div class="qty-value">${item.qty}</div>
+              <button type="button" class="qty qty-plus" data-line="${item.lineId}">+</button>
+            </div>
+            <div style="font-weight:800;min-width:110px;text-align:right">${formatSum(item.unitPrice * item.qty)}</div>
+            <button type="button" class="remove remove-item" data-line="${item.lineId}">Удалить</button>
           </div>
-          <button type="button" class="remove remove-item" data-line="${item.lineId}">✕</button>
         </div>
       `).join('');
     }
@@ -654,12 +699,6 @@ body{
       const url = `https://t.me/${TELEGRAM_USERNAME}?text=${encodeURIComponent(buildCheckoutText())}`;
       window.open(url, '_blank');
     }
-
-    function toggleCart(){
-      cartPanel.classList.toggle('open');
-    }
-    function openCart(){ cartPanel.classList.add('open'); }
-    function closeCart(){ cartPanel.classList.remove('open'); }
 
     document.getElementById('searchNumbers').addEventListener('input', renderNumbers);
     document.getElementById('priceFilterNumbers').addEventListener('change', renderNumbers);
@@ -689,10 +728,6 @@ body{
       const removeBtn = e.target.closest('.remove-item');
       if(removeBtn){
         removeItem(removeBtn.dataset.line);
-        return;
-      }
-      if(!cartPanel.contains(e.target) && !e.target.closest('.cart-fab')){
-        if(cartPanel.classList.contains('open')) closeCart();
       }
     });
 
@@ -716,4 +751,4 @@ body{
     updateCustomStarsPreview();
     goHome();
   </script></body>
-  </html>
+</html>
