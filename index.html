@@ -11,41 +11,76 @@ body{
 font-family:'Inter',sans-serif;
 color:white;
 min-height:100vh;
-background:linear-gradient(#020617,#020617);
+background:#020617;
 overflow-x:hidden;
 }
 
-/* Animated moon */
-body::before{
-content:"";
+/* stars */
+.stars{
 position:fixed;
-width:500px;
-height:500px;
-background:radial-gradient(circle,#f1f5f9 0%,#94a3b8 35%,transparent 65%);
+width:100%;
+height:100%;
+background:transparent;
+z-index:-3;
+}
+
+.stars::after{
+content:"";
+position:absolute;
+width:2px;
+height:2px;
+background:white;
+box-shadow:
+20vw 10vh white,
+30vw 40vh white,
+70vw 20vh white,
+80vw 70vh white,
+10vw 60vh white,
+50vw 30vh white,
+90vw 50vh white,
+60vw 80vh white,
+40vw 75vh white,
+25vw 85vh white;
+animation:twinkle 3s infinite alternate;
+}
+
+@keyframes twinkle{
+0%{opacity:.3}
+100%{opacity:1}
+}
+
+/* moon with parallax */
+.moon{
+position:fixed;
+width:350px;
+height:350px;
 border-radius:50%;
+background:radial-gradient(circle,#f1f5f9,#94a3b8);
 left:50%;
 top:10%;
 transform:translateX(-50%);
-opacity:.18;
-animation:moonMove 20s ease-in-out infinite alternate;
+opacity:.15;
+filter:blur(1px);
 z-index:-2;
+animation:moonFloat 12s ease-in-out infinite alternate;
 }
 
-@keyframes moonMove{
-0%{transform:translateX(-50%) translateY(0)}
-100%{transform:translateX(-50%) translateY(30px)}
+@keyframes moonFloat{
+0%{transform:translate(-50%,0)}
+100%{transform:translate(-50%,30px)}
 }
 
-/* Mountains */
+/* mountains */
 .mountains{
 position:fixed;
 bottom:0;
 left:0;
 width:100%;
 height:40vh;
-background:linear-gradient(to top,#020617 10%,transparent),
-linear-gradient(135deg,#020617 30%,transparent 30%),
-linear-gradient(225deg,#020617 30%,transparent 30%);
+background:
+linear-gradient(to top,#020617 10%,transparent),
+linear-gradient(140deg,#020617 30%,transparent 30%),
+linear-gradient(220deg,#020617 30%,transparent 30%);
 background-size:100% 100%,50% 100%,50% 100%;
 background-position:0 0,0 0,100% 0;
 background-repeat:no-repeat;
@@ -148,7 +183,6 @@ transition:.2s;
 transform:scale(1.05);
 }
 
-/* floating telegram button */
 .float{
 position:fixed;
 bottom:25px;
@@ -169,29 +203,6 @@ transition:.2s;
 
 .float:hover{transform:scale(1.1)}
 
-.admin{
-margin-top:50px;
-padding:20px;
-background:#0f172a;
-border-radius:16px;
-}
-
-.admin input{
-padding:10px;
-margin:5px;
-border:none;
-border-radius:8px;
-}
-
-.admin button{
-padding:10px 16px;
-border:none;
-border-radius:8px;
-background:#38bdf8;
-font-weight:600;
-cursor:pointer;
-}
-
 footer{
 text-align:center;
 margin-top:60px;
@@ -203,19 +214,15 @@ font-size:14px;
 header h1{font-size:28px}
 }
 
-</style></head><body><div class="mountains"></div><div class="container"><header>
+</style></head><body><div class="stars"></div>
+<div class="moon"></div>
+<div class="mountains"></div><div class="container"><header>
 <h1>Виртуальные номера Telegram</h1>
 <p>Магазин номеров для регистрации</p>
 </header><div class="search">
 <input id="search" placeholder="Поиск страны...">
-</div><div class="catalog" id="catalog"></div><div class="admin" id="admin" style="display:none">
-<h3>Админ панель</h3>
-<input id="country" placeholder="Страна">
-<input id="price" placeholder="Цена">
-<button onclick="addNumber()">Добавить</button>
-</div><footer>
-Напишите в Telegram чтобы проверить наличие номера
-</footer></div><a class="float" href="https://t.me/Kingofbaldw1n">✈</a>
+</div><div class="catalog" id="catalog"></div><footer>
+Напишите в Telegram чтобы проверить наличие номера</footer></div><a class="float" href="https://t.me/Kingofbaldw1n">✈</a>
 
 <script>
 
@@ -239,10 +246,14 @@ catalog.innerHTML=''
 list.forEach(n=>{
 const card=document.createElement('div')
 card.className='card'
+
+const message=`Привет хочу купить номер ${n.country}`
+const link=`https://t.me/Kingofbaldw1n?text=${encodeURIComponent(message)}`
+
 card.innerHTML=`
 <div class="country">${n.country}</div>
 <div class="price">${n.price}</div>
-<a class="btn" href="https://t.me/Kingofbaldw1n">Купить</a>
+<a class="btn" href="${link}">Купить</a>
 `
 
 catalog.appendChild(card)
@@ -262,25 +273,6 @@ n.country.toLowerCase().includes(value)
 
 render(filtered)
 })
-
-/* admin panel secret */
-
-const urlParams=new URLSearchParams(window.location.search)
-
-if(urlParams.get('admin')==='baldwin'){
-
-document.getElementById('admin').style.display='block'
-}
-
-function addNumber(){
-
-const country=document.getElementById('country').value
-const price=document.getElementById('price').value
-
-numbers.push({country,price})
-
-render(numbers)
-}
 
 </script></body>
 </html>
